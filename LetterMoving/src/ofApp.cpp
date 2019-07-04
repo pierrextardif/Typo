@@ -17,43 +17,15 @@ void ofApp::setup(){
     
     outline = createVboLetter(c);
     
+    noise = vector < ofVec3f > (outline.getNumVertices());
 
-}
-
-vector < ofVec3f> ofApp::addToVector(int amount, ofVec3f p2, ofVec3f p1){
-    vector < ofVec3f > v;
-    for(int i = 1; i < amount * 2 - 1; i++){
-        float fractionVal = (float)(i) / (float)(2 * amount);
-        ofVec3f p3 = {  static_cast<float>(p1.x * fractionVal  + p2.x * (1 - fractionVal)),
-                        static_cast<float>(p1.y * fractionVal  + p2.y * (1 - fractionVal)),
-                        static_cast<float>(p1.z * fractionVal  + p2.z * (1 - fractionVal))};
-        v.push_back(p3);
-        v.push_back(p3);
-    }
-    return v;
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    for(int i = 0; i < outline.getNumVertices(); i++){
-        
-        
-        ofVec3f pos = outline.getVertex(i);
-        pos.z  = 60 * ofNoise((i + ofGetElapsedTimef() * 40 ) * 0.01);
-        outline.setVertex(i, pos);
-        if(i%2 == 1){
-            pos = outline.getVertex(i);
-            pos.z  = 60 * ofNoise((i+1 + ofGetElapsedTimef() * 40 ) * 0.01);
-            outline.setVertex(i, pos);
-            
-        }
-        if(i == outline.getNumVertices() - 1){
-            pos = outline.getVertex(i);
-            pos.z  = 60 * ofNoise((ofGetElapsedTimef() * 40 ) * 0.01);
-            outline.setVertex(i, pos);
-        }
-        
-    }
+    
+    updateNoise(noise.data());
+    addNoiseToLetter(&outline, noise.data());
 }
 
 //--------------------------------------------------------------
@@ -90,6 +62,7 @@ void ofApp::keyPressed(int key){
         pickLetter(indexLetter);
     }
     outline = createVboLetter(c);
+    noise = vector < ofVec3f > (outline.getNumVertices());
 
 }
 void ofApp::pickLetter(int indexLetter){
@@ -147,4 +120,51 @@ ofVboMesh ofApp::createVboLetter(char c){
     
     
     return line;
+}
+
+
+//--------------------------------------------------------------
+void ofApp::updateNoise(ofVec3f* noisePointer ){
+    for( int i = 0; i < noise.size(); i++){
+        (*noisePointer).z = 60 * ofNoise((i + ofGetElapsedTimef() * 40 ) * 0.01);
+        *(noisePointer++);
+    }
+}
+
+
+//--------------------------------------------------------------
+void ofApp::addNoiseToLetter(ofVboMesh* v, ofVec3f* noisePointer){
+    for(int i = 0; i < v->getNumVertices(); i++){
+        ofVec3f pos = v->getVertex(i);
+        pos.z  = (*noisePointer).z;
+//        60 * ofNoise((i + ofGetElapsedTimef() * 40 ) * 0.01);
+        v->setVertex(i, pos);
+        if(i%2 == 1){
+            pos = v->getVertex(i);
+            pos.z  = ( *( noisePointer+1) ).z;
+//            pos.z  = 60 * ofNoise((i+1 + ofGetElapsedTimef() * 40 ) * 0.01);
+            v->setVertex(i, pos);
+            
+        }
+        if(i == v->getNumVertices() - 1){
+            pos = v->getVertex(i);
+            pos.z  = (noise[0]).z;
+            pos.z  = 60 * ofNoise((ofGetElapsedTimef() * 40 ) * 0.01);
+            v->setVertex(i, pos);
+        }
+        *(noisePointer++);
+    }
+}
+
+vector < ofVec3f> ofApp::addToVector(int amount, ofVec3f p2, ofVec3f p1){
+    vector < ofVec3f > v;
+    for(int i = 1; i < amount * 2 - 1; i++){
+        float fractionVal = (float)(i) / (float)(2 * amount);
+        ofVec3f p3 = {  static_cast<float>(p1.x * fractionVal  + p2.x * (1 - fractionVal)),
+            static_cast<float>(p1.y * fractionVal  + p2.y * (1 - fractionVal)),
+            static_cast<float>(p1.z * fractionVal  + p2.z * (1 - fractionVal))};
+        v.push_back(p3);
+        v.push_back(p3);
+    }
+    return v;
 }
