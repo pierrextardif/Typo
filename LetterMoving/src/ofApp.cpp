@@ -13,7 +13,7 @@ void ofApp::setup(){
     this->font.loadFont("fonts/Arial Black.ttf", 300, true, true, true);
     
     
-    c = 'T';
+    c = 'A';
     
     outline = createVboLetter(c);
     
@@ -64,7 +64,7 @@ void ofApp::draw(){
     ofRotateX(180);
     
     
-//    ofRotateY(ofGetElapsedTimef() * 30);
+    ofRotateY(ofGetElapsedTimef() * 30);
     
     ofPushMatrix();
     ofTranslate(position.x, position.y);
@@ -79,16 +79,28 @@ void ofApp::draw(){
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     if(key ==  ' '){
-        changeLetter();
-        outline = createVboLetter(c);
+        pickRandomLetter();
     }
+    if(key == OF_KEY_LEFT){
+        indexLetter -= 1;
+        pickLetter(indexLetter);
+    }
+    if(key == OF_KEY_RIGHT){
+        indexLetter += 1;
+        pickLetter(indexLetter);
+    }
+    outline = createVboLetter(c);
 
 }
+void ofApp::pickLetter(int indexLetter){
+    c = (char)(indexLetter + 65);
+}
 
-void ofApp::changeLetter(){
+void ofApp::pickRandomLetter(){
     int n = (int)(ofRandom(26));
-    c = (char)(n+65);
-    cout << "this is c : " << ofToString(c) << endl;
+    c = (char)(n + 65);
+    
+    indexLetter = n;
 }
 
 

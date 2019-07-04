@@ -17,14 +17,15 @@ class ofApp : public ofBaseApp{
     
     
     char c;
-    ofPath path;
+    int indexLetter = 0;
     ofVboMesh outline;
     ofVec2f position;
     
     ofVboMesh createVboLetter(char c);
     vector < ofVec3f> addToVector( int amount, ofVec3f p1, ofVec3f p2);
     
-    void changeLetter();
+    void pickRandomLetter();
+    void pickLetter(int indexLetter);
     
     
     
