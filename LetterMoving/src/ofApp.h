@@ -24,8 +24,9 @@ class ofApp : public ofBaseApp{
     ofVboMesh outline, outlineNoise;
     ofVec2f position;
     
-    
+    ofVec2f positionLetter(char c);
     ofVboMesh createVboLetter(char c);
+    ofVboMesh createVboWord(string word);
     vector < ofVec3f> addToVector( int amount, ofVec3f p1, ofVec3f p2);
     float depthLetterMoves, depthNoise, speedNoise;
     float freqNoise;

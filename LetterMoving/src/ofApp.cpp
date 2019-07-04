@@ -17,6 +17,8 @@ void ofApp::setup(){
     
     outline = outlineNoise = createVboLetter(c);
     
+    outline = outlineNoise = createVboWord("YO");
+    
     noise = vector < ofVec3f > (outline.getNumVertices());
     
     // colors
@@ -193,4 +195,32 @@ vector < ofVec3f> ofApp::addToVector(int amount, ofVec3f p2, ofVec3f p1){
         v.push_back(p3);
     }
     return v;
+}
+
+ofVec2f ofApp::positionLetter(char c){
+    ofPath path = font.getCharacterAsPoints(c, true, false);
+    
+    ofVec2f pos = {-font.getStringBoundingBox(ofToString(c), 0,0).width, font.getStringBoundingBox(ofToString(c), 0,0).height};
+    
+    return pos;
+}
+
+
+ofVboMesh ofApp::createVboWord(string word){
+    
+    ofVboMesh vbo;
+    vbo.setMode(OF_PRIMITIVE_LINES);
+    
+    ofVboMesh tempVbo;
+    for( int i = 0; i < word.size(); i++){
+        char c = word[i];
+        tempVbo = createVboLetter(c);
+//        positionLetter
+        
+        for( int j = 0; j < tempVbo.getNumVertices(); j++){
+            vbo.addVertex(tempVbo.getVertex(j));
+        }
+    }
+    
+    return vbo;
 }
