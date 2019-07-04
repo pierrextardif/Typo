@@ -10,14 +10,28 @@ void ofApp::setup(){
     ofSetLineWidth(3);
     ofEnableDepthTest();
     
-    this->font.loadFont("fonts/Arial Black.ttf", 300, true, true, true);
+    this->font.loadFont("fonts/Cooper Black Regular.ttf", 300, true, true, true);
     
     
     c = 'A';
     
-    outline = createVboLetter(c);
+    outline = outlineNoise = createVboLetter(c);
     
     noise = vector < ofVec3f > (outline.getNumVertices());
+    
+    // colors
+    top = 555930;
+    bottom = 50003;
+    incTop = incBottom = 0.05;
+    
+    
+    //noise
+    indexLetter = 0;
+    freqNoise = 0.005;
+    
+    depthLetterMoves = 8.0;
+    depthNoise = 40.0;
+    speedNoise = 700.0;
 
 }
 
@@ -25,13 +39,19 @@ void ofApp::setup(){
 void ofApp::update(){
     
     updateNoise(noise.data());
-    addNoiseToLetter(&outline, noise.data());
+    addNoiseToLetter(&outline, &outlineNoise, noise.data());
+    
+    // gradiant colors
+    top += incTop;
+    if(top.r == 255)incTop = -incTop;
+    bottom.g -= incBottom;
+    if(bottom.g == 0)incBottom = -incBottom;
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
     
-    ofBackgroundGradient(ofColor::darkCyan, ofColor::green, OF_GRADIENT_LINEAR);
+    ofBackgroundGradient(top, bottom, OF_GRADIENT_LINEAR);
     this->cam.begin();
     ofRotateX(180);
     
@@ -40,7 +60,7 @@ void ofApp::draw(){
     
     ofPushMatrix();
     ofTranslate(position.x, position.y);
-    outline.drawWireframe();
+    outlineNoise.drawWireframe();
 //    path.draw(position.x, position.y);
     
     ofPopMatrix();
@@ -61,7 +81,7 @@ void ofApp::keyPressed(int key){
         indexLetter += 1;
         pickLetter(indexLetter);
     }
-    outline = createVboLetter(c);
+    outline = outlineNoise = createVboLetter(c);
     noise = vector < ofVec3f > (outline.getNumVertices());
 
 }
@@ -84,7 +104,7 @@ ofVboMesh ofApp::createVboLetter(char c){
     
     
     vector < ofVec3f > points;
-    vector < int > indicesForLoops;
+    int indexVertex = 0;
     
     for(int i = 0; i < path.getOutline().size(); i++){
         ofPolyline p = path.getOutline()[i];
@@ -94,10 +114,12 @@ ofVboMesh ofApp::createVboLetter(char c){
         for(int j = 0; j < l; j++){
             
             ofVec3f vec = p.getVertices()[j];
+            addDepth(&vec, indexVertex);
             points.push_back(vec);
             if(j+1 < l){
                 
                 ofVec3f vec2 = p.getVertices()[j+1];
+                addDepth(&vec2, indexVertex + 1);
                 vector< ofVec3f > p = addToVector( 30, vec, vec2);
                 for(int k = 0;k < p.size();k++){
                     points.push_back(p[k]);
@@ -109,48 +131,52 @@ ofVboMesh ofApp::createVboLetter(char c){
             if(j == l-1){
                 points.push_back(p.getVertices()[0]);
             }
+            indexVertex ++;
         }
     }
     
     ofVboMesh line;
     line.setMode(OF_PRIMITIVE_LINES);
     for( int i = 0; i < points.size(); i++){
-        line.addVertex({points[i].x, points[i].y,0});
+        line.addVertex(points[i]);
     }
     
     
     return line;
 }
 
+//--------------------------------------------------------------
+void ofApp::addDepth(ofVec3f* vec, int index){
+    (*vec).z = (index % 5) * depthLetterMoves;
+    
+}
+
 
 //--------------------------------------------------------------
 void ofApp::updateNoise(ofVec3f* noisePointer ){
     for( int i = 0; i < noise.size(); i++){
-        (*noisePointer).z = 60 * ofNoise((i + ofGetElapsedTimef() * 40 ) * 0.01);
+        (*noisePointer).z = depthNoise * ofNoise((i + ofGetElapsedTimef() * speedNoise ) * freqNoise);
         *(noisePointer++);
     }
 }
 
 
 //--------------------------------------------------------------
-void ofApp::addNoiseToLetter(ofVboMesh* v, ofVec3f* noisePointer){
-    for(int i = 0; i < v->getNumVertices(); i++){
-        ofVec3f pos = v->getVertex(i);
-        pos.z  = (*noisePointer).z;
-//        60 * ofNoise((i + ofGetElapsedTimef() * 40 ) * 0.01);
-        v->setVertex(i, pos);
+void ofApp::addNoiseToLetter(ofVboMesh* vLetters, ofVboMesh* vNoise, ofVec3f* noisePointer){
+    for(int i = 0; i < vLetters->getNumVertices(); i++){
+        ofVec3f pos = vLetters->getVertex(i);
+        pos.z  += (*noisePointer).z;
+        vNoise->setVertex(i, pos);
         if(i%2 == 1){
-            pos = v->getVertex(i);
-            pos.z  = ( *( noisePointer+1) ).z;
-//            pos.z  = 60 * ofNoise((i+1 + ofGetElapsedTimef() * 40 ) * 0.01);
-            v->setVertex(i, pos);
+            pos = vLetters->getVertex(i);
+            pos.z  += ( *( noisePointer+1) ).z;
+            vNoise->setVertex(i, pos);
             
         }
-        if(i == v->getNumVertices() - 1){
-            pos = v->getVertex(i);
-            pos.z  = (noise[0]).z;
-            pos.z  = 60 * ofNoise((ofGetElapsedTimef() * 40 ) * 0.01);
-            v->setVertex(i, pos);
+        if(i == vLetters->getNumVertices() - 1){
+            pos = vLetters->getVertex(i);
+            pos.z  += (noise[0]).z;
+            vNoise->setVertex(i, pos);
         }
         *(noisePointer++);
     }
