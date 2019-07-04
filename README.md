@@ -3,7 +3,7 @@
 quick repo to upload typography sketches.
 
 - - - -
-![.](assets/1.png)
+![.](assets/1.gif)
 
 
 - - - -
