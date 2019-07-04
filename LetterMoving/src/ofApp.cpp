@@ -17,7 +17,7 @@ void ofApp::setup(){
     
     outline = outlineNoise = createVboLetter(c);
     
-    outline = outlineNoise = createVboWord("YO");
+    outline = outlineNoise = createVboWord("wiggle");
     
     noise = vector < ofVec3f > (outline.getNumVertices());
     
@@ -122,7 +122,7 @@ ofVboMesh ofApp::createVboLetter(char c){
                 
                 ofVec3f vec2 = p.getVertices()[j+1];
                 addDepth(&vec2, indexVertex + 1);
-                vector< ofVec3f > p = addToVector( 30, vec, vec2);
+                vector< ofVec3f > p = addToVector( 10, vec, vec2);
                 for(int k = 0;k < p.size();k++){
                     points.push_back(p[k]);
                 }
@@ -200,9 +200,7 @@ vector < ofVec3f> ofApp::addToVector(int amount, ofVec3f p2, ofVec3f p1){
 ofVec2f ofApp::positionLetter(char c){
     ofPath path = font.getCharacterAsPoints(c, true, false);
     
-    ofVec2f pos = {-font.getStringBoundingBox(ofToString(c), 0,0).width, font.getStringBoundingBox(ofToString(c), 0,0).height};
-    
-    return pos;
+    return {font.getStringBoundingBox(ofToString(c), 0,0).width, font.getStringBoundingBox(ofToString(c), 0,0).height};
 }
 
 
@@ -211,16 +209,27 @@ ofVboMesh ofApp::createVboWord(string word){
     ofVboMesh vbo;
     vbo.setMode(OF_PRIMITIVE_LINES);
     
+    ofVec2f positionCurrLetter = {0,0};
+    
     ofVboMesh tempVbo;
-    for( int i = 0; i < word.size(); i++){
+    for( int i = 0; i < word.length(); i++){
         char c = word[i];
+        cout << "c = " << c << endl;
         tempVbo = createVboLetter(c);
-//        positionLetter
+        ofVec2f posLetter = positionLetter(c);
         
         for( int j = 0; j < tempVbo.getNumVertices(); j++){
-            vbo.addVertex(tempVbo.getVertex(j));
+            ofVec3f pVert = tempVbo.getVertex(j);
+            pVert.x += positionCurrLetter.x;
+            vbo.addVertex(pVert);
+            
         }
+        positionCurrLetter.x += posLetter.x;
+        if(i == 0)positionCurrLetter.y += posLetter.y;
+        
     }
+    
+    position = {-positionCurrLetter.x / 2, positionCurrLetter.y / 4};
     
     return vbo;
 }
