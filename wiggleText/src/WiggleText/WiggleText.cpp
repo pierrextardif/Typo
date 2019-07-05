@@ -26,7 +26,7 @@ void WiggleText::setup(){
     // letter segments depth
     depthLetterMoves = 10;
     // segements disivisions
-    segmentsDivs = 5;
+    segmentsDivs = 7;
 }
 
 void WiggleText::update(){

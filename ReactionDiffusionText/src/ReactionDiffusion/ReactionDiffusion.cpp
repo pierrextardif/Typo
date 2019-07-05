@@ -1,0 +1,120 @@
+//
+//  ReactionDiffusion.hpp
+//  ReactionDiffusionText
+//
+//  Created by Pierre Tardif on 05/07/2019.
+//
+//
+
+#include "ReactionDiffusion.hpp"
+
+
+void ReactionDiffusion::setup(ofVec2f _sizeCanvas){
+    
+    sizeCanvas = _sizeCanvas;
+    
+    f.allocate(sizeCanvas.x, sizeCanvas.y, GL_RGBA);
+    
+    for(int i = 0; i < sizeCanvas.x; i++){
+        vector < ofVec2f > currentLine;
+        for(int j = 0; j < sizeCanvas.y; j++){
+            ofVec2f pointVal = {1,0};
+            currentLine.push_back(pointVal);
+        }
+        current.push_back(currentLine);
+        next.push_back(currentLine);
+    }
+}
+
+void ReactionDiffusion::targetLocation(ofRectangle DiffuseLocation){
+    
+    for(int i = DiffuseLocation.x; i < DiffuseLocation.width; i++){
+        for(int j = DiffuseLocation.y; j < DiffuseLocation.height; j++){
+            
+            current[i][j].y = 1.0;
+            
+        }
+    }
+    
+}
+
+void ReactionDiffusion::update(){
+    
+    for(int i = 1; i < sizeCanvas.x-1; i++){
+        for(int j = 1; j < sizeCanvas.y-1; j++){
+            
+            float a = current[i][j].x;
+            float b = current[i][j].y;
+            
+            next[i][j].x = a + (dA * laPlaceA(i,j)) - a * pow(b, 2) + ( feed * (1-a) );
+            next[i][j].y = b + (dB * laPlaceB(i,j)) - a * pow(b, 2) - ( k + feed * b );
+            if(next[i][j].x > 1.0)next[i][j].x = 1.0;
+            if(next[i][j].x < 0.0)next[i][j].x = 0.0;
+            if(next[i][j].y > 1.0)next[i][j].y = 1.0;
+            if(next[i][j].y < 0.0)next[i][j].y = 0.0;
+        }
+    }
+}
+
+float ReactionDiffusion::laPlaceA(int i, int j){
+    float sumA = 0;
+    sumA += current[i][j].x * -1;
+    sumA += current[i - 1][j].x * 0.2;
+    sumA += current[i + 1][j].x * 0.2;
+    sumA += current[i][j + 1].x * 0.2;
+    sumA += current[i][j - 1].x * 0.2;
+    sumA += current[i - 1][j - 1].x * 0.05;
+    sumA += current[i + 1][j - 1].x * 0.05;
+    sumA += current[i + 1][j + 1].x * 0.05;
+    sumA += current[i - 1][j + 1].x * 0.05;
+    return sumA;
+}
+
+
+float ReactionDiffusion::laPlaceB(int i, int j){
+    float sumB = 0;
+    sumB += current[i][j].y * -1;
+    sumB += current[i - 1][j].y * 0.2;
+    sumB += current[i + 1][j].y * 0.2;
+    sumB += current[i][j + 1].y * 0.2;
+    sumB += current[i][j - 1].y * 0.2;
+    sumB += current[i - 1][j - 1].y * 0.05;
+    sumB += current[i + 1][j - 1].y * 0.05;
+    sumB += current[i + 1][j + 1].y * 0.05;
+    sumB += current[i - 1][j + 1].y * 0.05;
+    return sumB;
+}
+
+void ReactionDiffusion::draw(){
+    ofPixels pixels;
+    f.readToPixels(pixels);
+    for(int i = 1; i < sizeCanvas.x-1; i++){
+        for(int j = 1; j < sizeCanvas.y-1; j++){
+            int indexPixel = (sizeCanvas.y - 1) * i + j;
+            ofColor currentColor = pixels[indexPixel * 4];
+            float a = next[i][j].x;
+            float b = next[i][j].y;
+            float c = ( (a - b) * 255.0 );
+            if(c > 255.0)c = 255.0;
+            if(c < 0.0)  c = 0.0;
+
+//            for( int k = 0; k < 4;k++){
+            
+            ofColor tempCol = ofColor(c,c,c, 255.0);
+            pixels.setColor(i,j,tempCol);
+//                pixels[indexPixel + k] = c;
+                
+//            }
+        }
+    }
+    f.getTexture().loadData(pixels.getData(),sizeCanvas.x, sizeCanvas.y, GL_RGBA);
+    f.draw(0,0);
+
+}
+
+
+void ReactionDiffusion::swap(){
+    vector < vector < ofVec2f > > temp = current;
+    current = next;
+    next = temp;
+}

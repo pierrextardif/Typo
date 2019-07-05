@@ -14,7 +14,7 @@ void ofApp::setup(){
     bottom = ofColor::tomato;
     
     wiggleText.setup();
-    wiggleText.setupMeshWord("wiggle Text");
+    wiggleText.setupMeshWord("Masino Bay");
     
 }
 
