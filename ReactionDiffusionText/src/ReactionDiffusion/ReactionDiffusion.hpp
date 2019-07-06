@@ -37,6 +37,8 @@ class ReactionDiffusion
     void targetLocation(ofRectangle DiffuseLocation);
     void update();
     
+    void updateFbo();
+    
     float laPlaceA(int i, int j);
     float laPlaceB(int i, int j);
     
