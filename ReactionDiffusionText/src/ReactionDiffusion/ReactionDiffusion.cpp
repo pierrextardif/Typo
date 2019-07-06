@@ -44,8 +44,8 @@ void ReactionDiffusion::update(){
     for(int i = 1; i < sizeCanvas.x-1; i++){
         for(int j = 1; j < sizeCanvas.y-1; j++){
             
-            float a = current[i][j].x;
-            float b = current[i][j].y;
+            double a = current[i][j].x;
+            double b = current[i][j].y;
             
             next[i][j].x = a + (dA * laPlaceA(i,j)) - a * pow(b, 2) + ( feed * (1-a) );
             next[i][j].y = b + (dB * laPlaceB(i,j)) - a * pow(b, 2) - ( k + feed * b );
@@ -57,8 +57,8 @@ void ReactionDiffusion::update(){
     }
 }
 
-float ReactionDiffusion::laPlaceA(int i, int j){
-    float sumA = 0;
+double ReactionDiffusion::laPlaceA(int i, int j){
+    double sumA = 0;
     sumA += current[i][j].x * -1;
     sumA += current[i - 1][j].x * 0.2;
     sumA += current[i + 1][j].x * 0.2;
@@ -72,28 +72,29 @@ float ReactionDiffusion::laPlaceA(int i, int j){
 }
 
 
-float ReactionDiffusion::laPlaceB(int i, int j){
-    float sumB = 0;
+double ReactionDiffusion::laPlaceB(int i, int j){
+    double sumB = 0.0;
     sumB += current[i][j].y * -1;
-    sumB += current[i - 1][j].y * 0.01;
-    sumB += current[i + 1][j].y * 0.01;
-    sumB += current[i][j + 1].y * 0.01;
-    sumB += current[i][j - 1].y * 0.01;
+    sumB += current[i - 1][j].y * 0.2;
+    sumB += current[i + 1][j].y * 0.2;
+    sumB += current[i][j + 1].y * 0.2;
+    sumB += current[i][j - 1].y * 0.2;
     sumB += current[i - 1][j - 1].y * 0.05;
     sumB += current[i + 1][j - 1].y * 0.05;
     sumB += current[i + 1][j + 1].y * 0.05;
     sumB += current[i - 1][j + 1].y * 0.05;
     return sumB;
 }
+
 void ReactionDiffusion::updateFbo(){
     ofPixels pixels;
     f.readToPixels(pixels);
     for(int i = 1; i < sizeCanvas.x-1; i++){
         for(int j = 1; j < sizeCanvas.y-1; j++){
 //            int indexPixel = ( (sizeCanvas.x - 1) * j + i ) * 4;
-            float a = next[i][j].x;
-            float b = next[i][j].y;
-            float c = (a - b) * 255;
+            double a = next[i][j].x;
+            double b = next[i][j].y;
+            double c = (a - b) * 255;
 //            if(c > 255)c = 255;
 //            if(c < 0)  c = 0;
             

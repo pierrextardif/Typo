@@ -13,7 +13,7 @@ void ofApp::setup(){
     top = ofColor::lightPink;
     bottom = ofColor::tomato;
     
-    int sizeSquare = WIDTH / 20;
+    int sizeSquare = WIDTH / 40;
     RDArrays.setup({WIDTH, HEIGHT});
     RDArrays.targetLocation(ofRectangle(WIDTH / 2 - sizeSquare, HEIGHT / 2 - sizeSquare, sizeSquare * 2, sizeSquare * 2) );
     

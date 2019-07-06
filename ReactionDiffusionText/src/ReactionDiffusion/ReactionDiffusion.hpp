@@ -24,10 +24,10 @@ class ReactionDiffusion
     
     // reaction diffusion params
     
-    float dA = 1;
-    float dB = 0.5;
-    float feed = 0.055;
-    float k = 0.062;
+    double dA = 1;
+    double dB = 0.5;
+    double feed = 0.055;
+    double k = 0.062;
     
     ofFbo f;
     
@@ -39,8 +39,8 @@ class ReactionDiffusion
     
     void updateFbo();
     
-    float laPlaceA(int i, int j);
-    float laPlaceB(int i, int j);
+    double laPlaceA(int i, int j);
+    double laPlaceB(int i, int j);
     
     void draw();
     void swap();
