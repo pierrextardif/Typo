@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxGui.h"
 
 using namespace std;
 
@@ -27,10 +28,11 @@ class ofApp : public ofBaseApp{
     
     ReactionDiffusion RDArrays;
 
-
-    
-    
-    
+    bool  guiON;
+    ofxPanel gui;
+    ofParameter < float > DiffA;
+    ofParameter < float > DiffB;
+    ofParameter < ofVec3f > kernel;
     
     
 };

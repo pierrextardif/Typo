@@ -15,8 +15,8 @@
 #include "ofMain.h"
 
 
-#define WIDTH 200
-#define HEIGHT 200
+#define WIDTH 1024
+#define HEIGHT 1024
 
 class ReactionDiffusion
 {
@@ -26,6 +26,8 @@ class ReactionDiffusion
         
     };
     
+    float alpha;
+    
     // reaction diffusion params
     float diffA(int i, int j);
     float diffB(int i, int j);
@@ -33,17 +35,20 @@ class ReactionDiffusion
     float kill(int i, int j);
     
     float Delta = 1.0;
+    float guiDiffA, guiDiffB;
     
+//    ofFbo current;
     ofFbo f;
     
     ofVec2f sizeCanvas;
     
     void setup(ofVec2f _sizeCanvas);
-    void targetLocation(ofRectangle DiffuseLocation);
-    void targetLocationMouse( int x, int y);
+    void seedLocation(ofRectangle DiffuseLocation);
+    void obstacleLocation(ofRectangle DiffuseLocation);
+    void targetLocationMouse( int x, int y, bool left);
 
     void update();
-    
+    void updateWithShader(float DiffA, float DiffB, ofVec3f kernel);
     void updateFbo();
     
     float laPlaceA(int i, int j);
@@ -52,13 +57,16 @@ class ReactionDiffusion
     void draw();
     void swap();
     
-    vector < vector < ofVec2f > > current;
-    vector < vector < ofVec2f > > next;
+    ofFbo current;
+    ofFbo next;
+    
+    float getA(int i, int j, ofVboMesh* v);
+    float getB(int i, int j, ofVboMesh* v);
+
     
     
     // try shader
     ofShader shaderTexture;
-    void updateShader();
     
     
 };

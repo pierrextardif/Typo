@@ -8,13 +8,13 @@ in vec2 texcoord;
 in vec4 color;
 
 out vec2 fragCoord;
-out float positionZ;
+out vec3 ABReactives;
 
 void main()
 {
     
     fragCoord = texcoord;
-    positionZ = normal.z;
+    ABReactives = normal;
     
     gl_Position = modelViewProjectionMatrix * position;
 }
