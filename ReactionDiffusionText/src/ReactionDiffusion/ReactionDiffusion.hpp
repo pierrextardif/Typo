@@ -56,7 +56,9 @@ class ReactionDiffusion
     vector < vector < ofVec2f > > next;
     
     
-//    ofShader shaderTexture;
+    // try shader
+    ofShader shaderTexture;
+    void updateShader();
     
     
 };

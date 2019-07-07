@@ -25,7 +25,7 @@ void ReactionDiffusion::setup(ofVec2f _sizeCanvas){
         next.push_back(currentLine);
     }
     
-//    shaderTexture.load(".)
+    shaderTexture.load("../../src/shaders/main/shader.vert", "../../src/shaders/main/shader.frag");
 }
 
 void ReactionDiffusion::targetLocation(ofRectangle DiffuseLocation){
@@ -144,6 +144,11 @@ void ReactionDiffusion::updateFbo(){
         }
     }
     f.getTexture().loadData(pixels.getData(),sizeCanvas.x, sizeCanvas.y, GL_RGBA);
+}
+
+void ReactionDiffusion::updateShader(){
+//    shaderTexture.begin();
+//    shaderTexture.
 }
 
 void ReactionDiffusion::draw(){
