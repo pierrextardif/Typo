@@ -4,8 +4,6 @@
 
 using namespace std;
 
-#define WIDTH 1024
-#define HEIGHT 1024
 
 #include "ReactionDiffusion/ReactionDiffusion.hpp"
 
@@ -18,6 +16,8 @@ class ofApp : public ofBaseApp{
 		void draw();
 		
 		void keyPressed(int key);
+    void mouseDragged(int x, int y, int button);
+
     
     //background colors
     ofColor top, bottom;
@@ -26,6 +26,7 @@ class ofApp : public ofBaseApp{
 //    WiggleText wiggleText;
     
     ReactionDiffusion RDArrays;
+
 
     
     

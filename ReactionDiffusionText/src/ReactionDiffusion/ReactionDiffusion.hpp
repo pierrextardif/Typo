@@ -14,6 +14,10 @@
 #include <stdio.h>
 #include "ofMain.h"
 
+
+#define WIDTH 200
+#define HEIGHT 200
+
 class ReactionDiffusion
 {
     public:
@@ -23,11 +27,12 @@ class ReactionDiffusion
     };
     
     // reaction diffusion params
+    float diffA(int i, int j);
+    float diffB(int i, int j);
+    float feed(int i, int j);
+    float kill(int i, int j);
     
-    double dA = 1;
-    double dB = 0.5;
-    double feed = 0.055;
-    double k = 0.062;
+    float Delta = 1.0;
     
     ofFbo f;
     
@@ -35,18 +40,23 @@ class ReactionDiffusion
     
     void setup(ofVec2f _sizeCanvas);
     void targetLocation(ofRectangle DiffuseLocation);
+    void targetLocationMouse( int x, int y);
+
     void update();
     
     void updateFbo();
     
-    double laPlaceA(int i, int j);
-    double laPlaceB(int i, int j);
+    float laPlaceA(int i, int j);
+    float laPlaceB(int i, int j);
     
     void draw();
     void swap();
     
     vector < vector < ofVec2f > > current;
     vector < vector < ofVec2f > > next;
+    
+    
+//    ofShader shaderTexture;
     
     
 };
