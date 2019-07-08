@@ -5,7 +5,6 @@ void ofApp::setup(){
     
     ofSetFrameRate(60);
     ofSetWindowTitle("diffusionReactionText");
-    cam.setDistance(400);
     
     // colors
     top = ofColor::lightPink;
@@ -32,10 +31,6 @@ void ofApp::setup(){
     gui.add(kernel.set("kernel", {0.09, 0.15}, {0, 0}, {1.0, 0.8}));
     gui.loadFromFile("settings.xml");
     guiON = false;
-    
-    RDArrays.guiDiffA = DiffA;
-    RDArrays.guiDiffB = DiffB;
-    
 }
 
 //--------------------------------------------------------------
@@ -44,31 +39,16 @@ void ofApp::update(){
     top = top.lerp(ofColor::blue, 0.0000001);
     bottom = bottom.lerp(ofColor::grey, 0.0000001);
     
-    
-    RDArrays.updateWithShader(DiffA, DiffB, {kernel->x, kernel->y});
-    RDArrays.updateFbo();
-//    RDArrays.updateVboMesh();
+    // diffusion Reaction update
+    RDArrays.shaderReact(DiffA, DiffB, {kernel->x, kernel->y});
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
     
-    
     ofBackgroundGradient(top, bottom, OF_GRADIENT_LINEAR);
-//    ofEnableDepthTest();
-
-//    cam.begin();
-
+    
     RDArrays.draw();
-//    ofSetColor(255, 255);
-//    RDArrays.vbo.draw();
-    
-    
-//    cam.end();
-//    ofDisableDepthTest();
-
-    
-    RDArrays.swap();
     
     ofPushMatrix();
     if(guiON)gui.draw();

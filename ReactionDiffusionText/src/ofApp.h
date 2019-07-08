@@ -17,17 +17,18 @@ class ofApp : public ofBaseApp{
 		void draw();
 		
 		void keyPressed(int key);
-    void mouseDragged(int x, int y, int button);
+        void mouseDragged(int x, int y, int button);
 
-    ofTrueTypeFont font;
     //background colors
     ofColor top, bottom;
-    ofEasyCam cam;
     
     
     ReactionDiffusion RDArrays;
+    
+    // only used to get the outline of the text
     WiggleText wTextOutline;
 
+    
     bool  guiON;
     ofxPanel gui;
     ofParameter < float > DiffA;
