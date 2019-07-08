@@ -33,6 +33,7 @@ class WiggleText{
     void setupMeshLetter(char c);
     void setupMeshWord(string word);
     ofVec2f positionLetter(char c);
+    ofVec2f positionWord(string word);
     ofVboMesh createVboLetter(char c);
     ofVboMesh createVboWord(string word);
     vector < ofVec3f> addToVector( int amount, ofVec3f p1, ofVec3f p2);

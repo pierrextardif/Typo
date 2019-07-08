@@ -37,19 +37,17 @@ class ReactionDiffusion
     float Delta = 1.0;
     float guiDiffA, guiDiffB;
     
-//    ofFbo current;
-    ofFbo f;
-    
     ofVec2f sizeCanvas;
     
     void setup(ofVec2f _sizeCanvas);
-    void seedLocation(ofRectangle DiffuseLocation);
-    void obstacleLocation(ofRectangle DiffuseLocation);
+    void seedLocation(ofVec2f seedOrigin, float  radius);
+    void obstacleLocation(ofVec2f obstacleOrigin, float  radius);
     void targetLocationMouse( int x, int y, bool left);
 
     void update();
-    void updateWithShader(float DiffA, float DiffB, ofVec3f kernel);
+    void updateWithShader(float DiffA, float DiffB, ofVec2f kernel);
     void updateFbo();
+    void updateVboMesh();
     
     float laPlaceA(int i, int j);
     float laPlaceB(int i, int j);
@@ -57,8 +55,11 @@ class ReactionDiffusion
     void draw();
     void swap();
     
+    ofFbo f;
     ofFbo current;
     ofFbo next;
+    
+    ofVboMesh vbo;
     
     float getA(int i, int j, ofVboMesh* v);
     float getB(int i, int j, ofVboMesh* v);

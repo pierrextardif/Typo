@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<gui>
+	<DiffA>1</DiffA>
+	<DiffB>0.15</DiffB>
+	<kernel>0.2, 0.05</kernel>
+</gui>

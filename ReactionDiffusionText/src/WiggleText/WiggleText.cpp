@@ -8,7 +8,7 @@
 #include "WiggleText.hpp"
 
 void WiggleText::setup(){
-    float dpi = 300;
+    float dpi = 100;
     font.loadFont("fonts/Stockholm/Stockholm_Mono.ttf", dpi, true, true, true);
     
     // letter
@@ -164,6 +164,10 @@ ofVec2f WiggleText::positionLetter(char c){
     ofPath path = font.getCharacterAsPoints(c, true, false);
     
     return {font.getStringBoundingBox(ofToString(c), 0,0).width, font.getStringBoundingBox(ofToString(c), 0,0).height};
+}
+
+ofVec2f WiggleText::positionWord(string word){
+    return {font.getStringBoundingBox(word, 0,0).width, font.getStringBoundingBox(ofToString(c), 0,0).height};
 }
 
 

@@ -5,20 +5,33 @@ void ofApp::setup(){
     
     ofSetFrameRate(60);
     ofSetWindowTitle("diffusionReactionText");
+    cam.setDistance(400);
     
     // colors
     top = ofColor::lightPink;
     bottom = ofColor::tomato;
     
-    int sizeSquare = 50;
+    // reaction diffuse
     RDArrays.setup({WIDTH, HEIGHT});
-    RDArrays.seedLocation(ofRectangle(WIDTH / 2 - sizeSquare, HEIGHT / 2 - sizeSquare, sizeSquare * 2, sizeSquare * 2) );
+    
+    string word = "Diffuse";
+    wTextOutline.setup();
+    wTextOutline.setupMeshWord(word);
+    ofVec2f pos = wTextOutline.positionWord(word);
+    
+    float sizePoint = 4.0;
+    for( int i = 0; i < wTextOutline.outline.getNumVertices();i++){
+        
+        ofVec3f tmpVertLetter = wTextOutline.outline.getVertex(i);
+        RDArrays.seedLocation( {tmpVertLetter.x - pos.x / 2 + WIDTH / 2, tmpVertLetter.y + HEIGHT / 2}, sizePoint );
+    }
     
     gui.setup("gui");
     gui.add(DiffA.set("DiffA", 1.0, 0, 1.5));
     gui.add(DiffB.set("DiffB", 0.5, 0, 1.0));
-    gui.add(kernel.set("kernel", {0.1, -1, 0.05}, {0,-1, 0}, {1.0, 1.0, 0.8}));
-    guiON = true;
+    gui.add(kernel.set("kernel", {0.09, 0.15}, {0, 0}, {1.0, 0.8}));
+    gui.loadFromFile("settings.xml");
+    guiON = false;
     
     RDArrays.guiDiffA = DiffA;
     RDArrays.guiDiffB = DiffB;
@@ -32,8 +45,9 @@ void ofApp::update(){
     bottom = bottom.lerp(ofColor::grey, 0.0000001);
     
     
-    RDArrays.updateWithShader(DiffA, DiffB, {kernel->x, kernel->y, kernel->z});
+    RDArrays.updateWithShader(DiffA, DiffB, {kernel->x, kernel->y});
     RDArrays.updateFbo();
+//    RDArrays.updateVboMesh();
 }
 
 //--------------------------------------------------------------
@@ -41,8 +55,18 @@ void ofApp::draw(){
     
     
     ofBackgroundGradient(top, bottom, OF_GRADIENT_LINEAR);
-    
+//    ofEnableDepthTest();
+
+//    cam.begin();
+
     RDArrays.draw();
+//    ofSetColor(255, 255);
+//    RDArrays.vbo.draw();
+    
+    
+//    cam.end();
+//    ofDisableDepthTest();
+
     
     RDArrays.swap();
     

@@ -8,7 +8,7 @@ using namespace std;
 
 #include "ReactionDiffusion/ReactionDiffusion.hpp"
 
-//#include "WiggleText/WiggleText.hpp"
+#include "WiggleText/WiggleText.hpp"
 
 class ofApp : public ofBaseApp{
 	public:
@@ -19,20 +19,20 @@ class ofApp : public ofBaseApp{
 		void keyPressed(int key);
     void mouseDragged(int x, int y, int button);
 
-    
+    ofTrueTypeFont font;
     //background colors
     ofColor top, bottom;
     ofEasyCam cam;
     
-//    WiggleText wiggleText;
     
     ReactionDiffusion RDArrays;
+    WiggleText wTextOutline;
 
     bool  guiON;
     ofxPanel gui;
     ofParameter < float > DiffA;
     ofParameter < float > DiffB;
-    ofParameter < ofVec3f > kernel;
+    ofParameter < ofVec2f > kernel;
     
     
 };

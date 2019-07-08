@@ -22,37 +22,41 @@ void ReactionDiffusion::setup(ofVec2f _sizeCanvas){
     guiDiffA = 1.0;
     guiDiffB = 0.5;
     alpha = 120;
-}
-
-void ReactionDiffusion::seedLocation(ofRectangle DiffuseLocation){
     
-    int radius = 1;
-    current.begin();
-    for(int i = DiffuseLocation.x; i < DiffuseLocation.x + DiffuseLocation.width; i++){
-        for(int j = DiffuseLocation.y; j < DiffuseLocation.y + DiffuseLocation.height; j++){
+    int indexVertex = 0;
+    float scale = 5.0;
+    vbo.setMode(OF_PRIMITIVE_POINTS);
+    for(int i = - WIDTH / 2; i < WIDTH / 2; i ++){
+        for(int j = - HEIGHT / 2; j < HEIGHT / 2; j ++){
+            vbo.addVertex({(float)(i * scale),(float)(j * scale),0});
+            vbo.addIndex(indexVertex);
+            vbo.addColor(ofColor::lemonChiffon);
             
-            ofSetColor(255, alpha);
-            ofDrawCircle(i,j, radius);
-            
+            indexVertex++;
         }
     }
+    
+}
+
+void ReactionDiffusion::seedLocation(ofVec2f seedOrigin, float  radius){
+    
+    current.begin();
+        ofPushMatrix();
+        ofSetColor(0, 0, 255, alpha);
+        ofDrawCircle(seedOrigin.y, seedOrigin.x, radius);
+        ofPopMatrix();
     current.end();
     
 }
 
 
-void ReactionDiffusion::obstacleLocation(ofRectangle DiffuseLocation){
-    
-    int radius = 1;
+void ReactionDiffusion::obstacleLocation(ofVec2f seedOrigin, float  radius){
+   
     current.begin();
-    for(int i = DiffuseLocation.x; i < DiffuseLocation.x + DiffuseLocation.width; i++){
-        for(int j = DiffuseLocation.y; j < DiffuseLocation.y + DiffuseLocation.height; j++){
-            
-            ofSetColor(0, alpha);
-            ofDrawCircle(i,j, radius);
-            
-        }
-    }
+        ofPushMatrix();
+        ofSetColor(255, 0, 0, alpha);
+        ofDrawCircle(seedOrigin.y, seedOrigin.x, radius);
+        ofPopMatrix();
     current.end();
     
 }
@@ -65,22 +69,22 @@ void ReactionDiffusion::targetLocationMouse( int x, int y, bool left){
     int sizeMousecircle = 4;
     
     if(left){
-        seedLocation(ofRectangle(y,x,4,4));
+        seedLocation({(float)x, (float)y}, 4.0);
     }else{
-        obstacleLocation(ofRectangle(y,x,4,4));
+        obstacleLocation({(float)x, (float)y}, 4.0);
     }
     
 }
 
-void ReactionDiffusion::updateWithShader(float DiffA, float DiffB, ofVec3f kernel){
+void ReactionDiffusion::updateWithShader(float DiffA, float DiffB, ofVec2f kernel){
     
     next.begin();
     shaderTexture.begin();
     shaderTexture.setUniform1f("feed", feed(0,0));
     shaderTexture.setUniform1f("kill", kill(0,0));
-    shaderTexture.setUniform1f("Du", DiffA);
-    shaderTexture.setUniform1f("Dv", DiffB);
-    shaderTexture.setUniform3f("kernelGUI", kernel);
+    shaderTexture.setUniform1f("DiffA", DiffA);
+    shaderTexture.setUniform1f("DiffB", DiffB);
+    shaderTexture.setUniform2f("kernelGUI", kernel);
     current.draw(0,0);
     shaderTexture.end();
     next.end();
@@ -184,17 +188,41 @@ void ReactionDiffusion::updateFbo(){
     for(int i = 1; i < sizeCanvas.x-1; i++){
         for(int j = 1; j < sizeCanvas.y-1; j++){
             
+            int indexPixel = (i * WIDTH + j ) * 4;
+            float c = MAX(nextPixels[indexPixel + 2], 0.0);
+            
+            ofColor tempCol = ofColor::mediumTurquoise;
+            if(c > 122)tempCol = ofColor::fuchsia;
+            
+            mainPixels.setColor(i,j, ofColor(tempCol, alpha));
+        }
+    }
+    f.getTexture().loadData(mainPixels.getData(),sizeCanvas.x, sizeCanvas.y, GL_RGBA);
+}
+
+void ReactionDiffusion::updateVboMesh(){
+    ofPixels currentPixels, nextPixels;
+    current.readToPixels(currentPixels);
+    next.readToPixels(nextPixels);
+    
+    float scale = 5.0;
+    for(int i = 1; i < sizeCanvas.x-1; i++){
+        for(int j = 1; j < sizeCanvas.y-1; j++){
             
             int indexPixel = (i * WIDTH + j ) * 4;
             
             float diff = nextPixels[indexPixel] - nextPixels[indexPixel + 1];
-//            float diff = next.getNormal(indexVertex).x - next.getNormal(indexVertex).y;
-            float c = MAX(diff, 0.0)*255.0;
+            float c = MAX(diff, 0.0);
             
-            mainPixels.setColor(i,j, ofColor(c, alpha));
+            int indexVertex = (i  * WIDTH + j);
+            
+            vbo.setVertex(indexVertex, {  (float)( (i - WIDTH / 2) * scale), (float)( ( j - HEIGHT / 2) * scale), -c * 80.0});
+            
+            
+            
         }
     }
-    f.getTexture().loadData(mainPixels.getData(),sizeCanvas.x, sizeCanvas.y, GL_RGBA);
+
 }
 
 void ReactionDiffusion::draw(){
