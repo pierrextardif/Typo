@@ -87,10 +87,23 @@ void ReactionDiffusion::updateFbo(){
         for(int j = 1; j < sizeCanvas.y-1; j++){
             
             int indexPixel = (i * WIDTH + j ) * 4;
-            float c = MAX(nextPixels[indexPixel + 2], 0.0);
+            float a = MAX(nextPixels[indexPixel + 0], 0.0);
+            float b = MAX(nextPixels[indexPixel + 2], 0.0);
             
             ofColor tempCol = ofColor::mediumTurquoise;
-            if(c > 122)tempCol = ofColor::fuchsia;
+            
+            if(b < 84){
+                tempCol = tempCol.lerp(ofColor::blueSteel, 1.0 - b / 84);
+            }
+            else if( (b > 84) && (b < 168) ){
+              
+                tempCol = tempCol.lerp(ofColor::orange, 1.0 - (b - 84) / 84);
+            }
+            else if(b > 168){
+                
+                tempCol = tempCol.lerp(ofColor::tan, 1.0 - (b - 168) / 84);
+                
+            }
             
             mainPixels.setColor(i,j, ofColor(tempCol, alpha));
         }
